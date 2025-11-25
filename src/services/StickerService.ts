@@ -16,6 +16,18 @@ export class StickerService {
     this.stickerRepository = new StickerRepository();
   }
 
+  private async validateDto<T extends object>(dto: T, DtoClass: new () => T): Promise<void> {
+    const instance = plainToInstance(DtoClass, dto);
+    const errors = await validate(instance);
+
+    if (errors.length > 0) {
+      const messages = errors
+        .map((error) => Object.values(error.constraints || {}).join(', '))
+        .join('; ');
+      throw new StickerValidationException(`Validation failed: ${messages}`);
+    }
+  }
+
   async findAll(boardId?: string): Promise<Sticker[]> {
     return this.stickerRepository.findAll(boardId);
   }
@@ -29,49 +41,15 @@ export class StickerService {
   }
 
   async create(dto: CreateStickerDto): Promise<Sticker> {
-    const createDto = plainToInstance(CreateStickerDto, dto);
-    const errors = await validate(createDto);
-
-    if (errors.length > 0) {
-      const messages = errors
-        .map((error) => Object.values(error.constraints || {}).join(', '))
-        .join('; ');
-      throw new StickerValidationException(`Validation failed: ${messages}`);
-    }
-
-    return this.stickerRepository.create({
-      boardId: dto.boardId,
-      content: dto.content,
-      positionX: dto.positionX,
-      positionY: dto.positionY,
-      color: dto.color,
-      userId: dto.userId
-    });
+    await this.validateDto(dto, CreateStickerDto);
+    return this.stickerRepository.create(dto);
   }
 
   async update(id: string, dto: UpdateStickerDto): Promise<Sticker> {
-    const existingSticker = await this.stickerRepository.findById(id);
-    if (!existingSticker) {
-      throw new StickerNotFoundException(id);
-    }
+    await this.findById(id);
+    await this.validateDto(dto, UpdateStickerDto);
 
-    const updateDto = plainToInstance(UpdateStickerDto, dto);
-    const errors = await validate(updateDto);
-
-    if (errors.length > 0) {
-      const messages = errors
-        .map((error) => Object.values(error.constraints || {}).join(', '))
-        .join('; ');
-      throw new StickerValidationException(`Validation failed: ${messages}`);
-    }
-
-    const updateData: Partial<Sticker> = {};
-    if (dto.content !== undefined) updateData.content = dto.content;
-    if (dto.positionX !== undefined) updateData.positionX = dto.positionX;
-    if (dto.positionY !== undefined) updateData.positionY = dto.positionY;
-    if (dto.color !== undefined) updateData.color = dto.color;
-
-    const updatedSticker = await this.stickerRepository.update(id, updateData);
+    const updatedSticker = await this.stickerRepository.update(id, dto);
     if (!updatedSticker) {
       throw new StickerNotFoundException(id);
     }
@@ -80,11 +58,7 @@ export class StickerService {
   }
 
   async delete(id: string): Promise<void> {
-    const sticker = await this.stickerRepository.findById(id);
-    if (!sticker) {
-      throw new StickerNotFoundException(id);
-    }
-
+    await this.findById(id);
     await this.stickerRepository.delete(id);
   }
 }
