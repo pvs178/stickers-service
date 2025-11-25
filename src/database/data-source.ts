@@ -17,5 +17,5 @@ export const AppDataSource = new DataSource({
   database: config.database,
   entities: [Board, Sticker],
   synchronize: false,
-  logging: process.env.NODE_ENV === 'development',
+  logging: process.env.NODE_ENV === 'development'
 });

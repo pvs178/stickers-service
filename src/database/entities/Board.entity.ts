@@ -1,9 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity('boards')
 export class Board {
@@ -16,5 +11,3 @@ export class Board {
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 }
-
-

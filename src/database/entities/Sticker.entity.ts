@@ -5,7 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
 import { Board } from './Board.entity.js';
 
@@ -42,5 +42,3 @@ export class Sticker {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 }
-
-
