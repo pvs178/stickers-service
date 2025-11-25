@@ -2,12 +2,13 @@ import { Request, Response } from 'express';
 import { StickerService } from '../services/StickerService.js';
 import { CreateStickerDto } from '../dto/CreateStickerDto.js';
 import { UpdateStickerDto } from '../dto/UpdateStickerDto.js';
+import { SocketService } from '../socket/SocketService.js';
 
 export class StickerController {
   private stickerService: StickerService;
 
-  constructor() {
-    this.stickerService = new StickerService();
+  constructor(socketService: SocketService) {
+    this.stickerService = new StickerService(socketService);
   }
 
   async findAll(req: Request, res: Response): Promise<void> {

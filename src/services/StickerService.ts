@@ -4,6 +4,7 @@ import { StickerRepository } from '../repositories/StickerRepository.js';
 import { Sticker } from '../database/entities/Sticker.entity.js';
 import { CreateStickerDto } from '../dto/CreateStickerDto.js';
 import { UpdateStickerDto } from '../dto/UpdateStickerDto.js';
+import { SocketService } from '../socket/SocketService.js';
 import {
   StickerNotFoundException,
   StickerValidationException
@@ -11,9 +12,11 @@ import {
 
 export class StickerService {
   private stickerRepository: StickerRepository;
+  private socketService: SocketService;
 
-  constructor() {
+  constructor(socketService: SocketService) {
     this.stickerRepository = new StickerRepository();
+    this.socketService = socketService;
   }
 
   private async validateDto<T extends object>(dto: T, DtoClass: new () => T): Promise<void> {
@@ -42,7 +45,9 @@ export class StickerService {
 
   async create(dto: CreateStickerDto): Promise<Sticker> {
     await this.validateDto(dto, CreateStickerDto);
-    return this.stickerRepository.create(dto);
+    const sticker = await this.stickerRepository.create(dto);
+    this.socketService.emitStickerCreated(sticker);
+    return sticker;
   }
 
   async update(id: string, dto: UpdateStickerDto): Promise<Sticker> {
@@ -54,11 +59,13 @@ export class StickerService {
       throw new StickerNotFoundException(id);
     }
 
+    this.socketService.emitStickerUpdated(updatedSticker);
     return updatedSticker;
   }
 
   async delete(id: string): Promise<void> {
-    await this.findById(id);
+    const sticker = await this.findById(id);
     await this.stickerRepository.delete(id);
+    this.socketService.emitStickerDeleted(id, sticker.boardId);
   }
 }

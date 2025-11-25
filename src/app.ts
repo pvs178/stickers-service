@@ -1,18 +1,22 @@
 import 'reflect-metadata';
 import dotenv from 'dotenv';
 import express, { Request, Response, RequestHandler } from 'express';
+import { createServer } from 'http';
 import { AppDataSource } from './database/data-source.js';
 import { StickerController } from './controllers/StickerController.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { SocketService } from './socket/SocketService.js';
 
 dotenv.config();
 
 const app = express();
+const httpServer = createServer(app);
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 
 app.use(express.json());
 
-const stickerController = new StickerController();
+const socketService = new SocketService(httpServer);
+const stickerController = new StickerController(socketService);
 
 const asyncHandler =
   (fn: (req: Request, res: Response) => Promise<void>): RequestHandler =>
@@ -55,8 +59,9 @@ async function start(): Promise<void> {
     process.exit(1);
   }
 
-  app.listen(PORT, () => {
+  httpServer.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log('WebSocket server initialized');
   });
 }
 

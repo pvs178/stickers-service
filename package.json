@@ -17,13 +17,14 @@
     "migration:revert": "tsx node_modules/typeorm/cli.js migration:revert -d src/database/data-source.ts"
   },
   "dependencies": {
+    "@types/socket.io": "^3.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2",
-    "socket.io": "^4.7.2",
+    "socket.io": "^4.8.1",
     "typeorm": "^0.3.17",
     "uuid": "^10.0.0"
   },
