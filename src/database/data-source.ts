@@ -16,7 +16,7 @@ export const AppDataSource = new DataSource({
   password: config.password,
   database: config.database,
   entities: [Board, Sticker],
-  migrations: [],
+  migrations: ['src/database/migrations/*.ts'],
   synchronize: false,
   logging: process.env.NODE_ENV === 'development'
 });

@@ -8,6 +8,9 @@ export class Board {
   @Column({ type: 'varchar', length: 100 })
   name: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  userId?: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 }

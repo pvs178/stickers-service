@@ -7,10 +7,11 @@ Real-time collaborative sticky notes service with REST API and WebSocket support
 - **REST API** - Full CRUD operations for stickers
 - **Real-time Updates** - WebSocket events for live collaboration
 - **Validation** - DTO validation with detailed error messages
-- **Rate Limiting** - API rate limiting (60 req/min)
+- **Rate Limiting** - API rate limiting (300 req/min, 5 RPS)
 - **CORS** - Configurable CORS support
 - **Health Check** - Database and service health monitoring
 - **API Versioning** - `/api/v1` structure
+- **Owner Tracking** - Optional userId tracking for boards and stickers
 
 ## Tech Stack
 
@@ -57,14 +58,14 @@ npm run migration:run
 Create a test board:
 
 ```sql
-INSERT INTO boards (id, name) 
-VALUES ('550e8400-e29b-41d4-a716-446655440000', 'Test Board');
+INSERT INTO boards (id, name, "userId") 
+VALUES ('550e8400-e29b-41d4-a716-446655440000', 'Test Board', 'user-123');
 ```
 
 Or using psql:
 
 ```bash
-psql -U postgres -d stickers_db -c "INSERT INTO boards (id, name) VALUES ('550e8400-e29b-41d4-a716-446655440000', 'Test Board');"
+psql -U postgres -d stickers_db -c "INSERT INTO boards (id, name, \"userId\") VALUES ('550e8400-e29b-41d4-a716-446655440000', 'Test Board', 'user-123');"
 ```
 
 ### Development
