@@ -1,14 +1,15 @@
 import 'reflect-metadata';
 import dotenv from 'dotenv';
-import express, { Request, Response, RequestHandler } from 'express';
+import express, { Request, Response } from 'express';
 import { createServer } from 'http';
+import cors from 'cors';
 import { AppDataSource } from './database/data-source.js';
-import { StickerController } from './controllers/StickerController.js';
+import { HealthController } from './controllers/HealthController.js';
 import { errorHandler } from './middleware/errorHandler.js';
-import { validateDto } from './middleware/validateDto.js';
 import { SocketService } from './socket/SocketService.js';
-import { CreateStickerDto } from './dto/CreateStickerDto.js';
-import { UpdateStickerDto } from './dto/UpdateStickerDto.js';
+import { corsConfig } from './config/cors.config.js';
+import { apiLimiter } from './config/rateLimit.config.js';
+import { createV1Router } from './routes/v1/index.js';
 
 dotenv.config();
 
@@ -16,42 +17,16 @@ const app = express();
 const httpServer = createServer(app);
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 
+app.use(cors(corsConfig));
 app.use(express.json());
+app.use(apiLimiter);
 
 const socketService = new SocketService(httpServer);
-const stickerController = new StickerController(socketService);
+const healthController = new HealthController();
 
-const asyncHandler =
-  (fn: (req: Request, res: Response) => Promise<void>): RequestHandler =>
-  (req, res, next) =>
-    fn(req, res).catch(next);
+app.get('/health', (req: Request, res: Response) => healthController.check(req, res));
 
-app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok' });
-});
-
-app.get(
-  '/api/v1/stickers',
-  asyncHandler((req, res) => stickerController.findAll(req, res))
-);
-app.get(
-  '/api/v1/stickers/:id',
-  asyncHandler((req, res) => stickerController.findById(req, res))
-);
-app.post(
-  '/api/v1/stickers',
-  validateDto(CreateStickerDto),
-  asyncHandler((req, res) => stickerController.create(req, res))
-);
-app.put(
-  '/api/v1/stickers/:id',
-  validateDto(UpdateStickerDto),
-  asyncHandler((req, res) => stickerController.update(req, res))
-);
-app.delete(
-  '/api/v1/stickers/:id',
-  asyncHandler((req, res) => stickerController.delete(req, res))
-);
+app.use('/api/v1', createV1Router(socketService));
 
 app.use(errorHandler);
 
