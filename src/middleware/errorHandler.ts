@@ -1,19 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
-import {
-  StickerNotFoundException,
-  StickerValidationException
-} from '../exceptions/StickerException.js';
+import { AppException } from '../exceptions/AppException.js';
+import { ResponseFormatter } from '../types/ApiResponse.js';
 
 export function errorHandler(err: Error, req: Request, res: Response, _next: NextFunction): void {
-  if (err instanceof StickerNotFoundException) {
-    res.status(404).json({ error: err.message });
+  console.error('[Error Handler]', {
+    timestamp: new Date().toISOString(),
+    method: req.method,
+    path: req.path,
+    error: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
+
+  if (err instanceof AppException) {
+    res.status(err.statusCode).json(ResponseFormatter.error(err.message, err.code, err.details));
     return;
   }
 
-  if (err instanceof StickerValidationException) {
-    res.status(400).json({ error: err.message });
-    return;
-  }
+  const message = process.env.NODE_ENV === 'development' ? err.message : 'Internal server error';
 
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(500).json(ResponseFormatter.error(message, 'INTERNAL_ERROR'));
 }

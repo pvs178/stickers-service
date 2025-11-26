@@ -5,7 +5,10 @@ import { createServer } from 'http';
 import { AppDataSource } from './database/data-source.js';
 import { StickerController } from './controllers/StickerController.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { validateDto } from './middleware/validateDto.js';
 import { SocketService } from './socket/SocketService.js';
+import { CreateStickerDto } from './dto/CreateStickerDto.js';
+import { UpdateStickerDto } from './dto/UpdateStickerDto.js';
 
 dotenv.config();
 
@@ -37,10 +40,12 @@ app.get(
 );
 app.post(
   '/api/v1/stickers',
+  validateDto(CreateStickerDto),
   asyncHandler((req, res) => stickerController.create(req, res))
 );
 app.put(
   '/api/v1/stickers/:id',
+  validateDto(UpdateStickerDto),
   asyncHandler((req, res) => stickerController.update(req, res))
 );
 app.delete(

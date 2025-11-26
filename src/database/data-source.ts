@@ -16,6 +16,7 @@ export const AppDataSource = new DataSource({
   password: config.password,
   database: config.database,
   entities: [Board, Sticker],
+  migrations: [],
   synchronize: false,
   logging: process.env.NODE_ENV === 'development'
 });
