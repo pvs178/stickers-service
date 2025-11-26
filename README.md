@@ -54,6 +54,19 @@ CORS_ORIGIN=*
 npm run migration:run
 ```
 
+Create a test board:
+
+```sql
+INSERT INTO boards (id, name) 
+VALUES ('550e8400-e29b-41d4-a716-446655440000', 'Test Board');
+```
+
+Or using psql:
+
+```bash
+psql -U postgres -d stickers_db -c "INSERT INTO boards (id, name) VALUES ('550e8400-e29b-41d4-a716-446655440000', 'Test Board');"
+```
+
 ### Development
 
 ```bash
