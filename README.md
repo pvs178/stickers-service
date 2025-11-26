@@ -75,6 +75,16 @@ npm start
 4. Create a test board in database (ID: `550e8400-e29b-41d4-a716-446655440000`)
 5. Use collection requests in order (1→2→3...)
 
+## WebSocket Testing
+
+WebSocket events are automatically emitted when using REST API. To verify:
+
+1. Check server logs - you'll see WebSocket connections and events
+2. Use browser DevTools or Postman WebSocket feature to connect to `ws://localhost:3000`
+3. Emit `join:board` event with boardId
+4. Create/update/delete stickers via REST API
+5. Observe real-time events: `sticker:created`, `sticker:updated`, `sticker:deleted`
+
 ## API Endpoints
 
 ### Health Check
