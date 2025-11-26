@@ -1,0 +1,157 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-11-26T02:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_stickers_service",
+      "_type": "workspace",
+      "name": "Stickers Service API",
+      "description": "Complete API collection for Stickers Service"
+    },
+    {
+      "_id": "env_base_environment",
+      "_type": "environment",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:3000",
+        "test_board_id": "550e8400-e29b-41d4-a716-446655440000",
+        "test_sticker_id": "00000000-0000-0000-0000-000000000000"
+      },
+      "parentId": "wrk_stickers_service"
+    },
+    {
+      "_id": "fld_general",
+      "_type": "request_group",
+      "parentId": "wrk_stickers_service",
+      "name": "1. General",
+      "description": "General service endpoints"
+    },
+    {
+      "_id": "fld_stickers",
+      "_type": "request_group",
+      "parentId": "wrk_stickers_service",
+      "name": "2. Stickers CRUD",
+      "description": "Sticker CRUD operations"
+    },
+    {
+      "_id": "fld_errors",
+      "_type": "request_group",
+      "parentId": "wrk_stickers_service",
+      "name": "3. Error Examples",
+      "description": "Examples of error responses"
+    },
+    {
+      "_id": "req_health_check",
+      "_type": "request",
+      "parentId": "fld_general",
+      "name": "Health Check",
+      "method": "GET",
+      "url": "{{ _.base_url }}/health",
+      "description": "Check service health, database connection, and uptime"
+    },
+    {
+      "_id": "req_list_all_stickers",
+      "_type": "request",
+      "parentId": "fld_stickers",
+      "name": "1. List All Stickers",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/stickers",
+      "description": "Get all stickers from all boards"
+    },
+    {
+      "_id": "req_list_by_board",
+      "_type": "request",
+      "parentId": "fld_stickers",
+      "name": "2. List Stickers by Board",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/stickers?boardId={{ _.test_board_id }}",
+      "description": "Get stickers filtered by board ID"
+    },
+    {
+      "_id": "req_create_sticker",
+      "_type": "request",
+      "parentId": "fld_stickers",
+      "name": "3. Create Sticker",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/stickers",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"boardId\": \"{{ _.test_board_id }}\",\n  \"content\": \"My new sticker from Insomnia\",\n  \"positionX\": 100,\n  \"positionY\": 200,\n  \"color\": \"#FFEB3B\",\n  \"userId\": \"550e8400-e29b-41d4-a716-446655440001\"\n}"
+      },
+      "description": "Create a new sticker. Save the returned ID for next requests!"
+    },
+    {
+      "_id": "req_get_sticker",
+      "_type": "request",
+      "parentId": "fld_stickers",
+      "name": "4. Get Sticker by ID",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/stickers/PASTE_STICKER_ID_HERE",
+      "description": "Get single sticker. Replace PASTE_STICKER_ID_HERE with actual sticker ID"
+    },
+    {
+      "_id": "req_update_sticker",
+      "_type": "request",
+      "parentId": "fld_stickers",
+      "name": "5. Update Sticker",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/stickers/PASTE_STICKER_ID_HERE",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"content\": \"Updated content\",\n  \"positionX\": 150,\n  \"positionY\": 250,\n  \"color\": \"#4CAF50\"\n}"
+      },
+      "description": "Update sticker properties. Replace PASTE_STICKER_ID_HERE with actual ID"
+    },
+    {
+      "_id": "req_delete_sticker",
+      "_type": "request",
+      "parentId": "fld_stickers",
+      "name": "6. Delete Sticker",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/stickers/PASTE_STICKER_ID_HERE",
+      "description": "Delete a sticker. Replace PASTE_STICKER_ID_HERE with actual ID"
+    },
+    {
+      "_id": "req_error_validation",
+      "_type": "request",
+      "parentId": "fld_errors",
+      "name": "Validation Error (400)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/stickers",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"boardId\": \"invalid-uuid\",\n  \"content\": \"Test\"\n}"
+      },
+      "description": "Test validation error response (missing fields, invalid UUID)"
+    },
+    {
+      "_id": "req_error_not_found",
+      "_type": "request",
+      "parentId": "fld_errors",
+      "name": "Not Found Error (404)",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/stickers/{{ _.test_sticker_id }}",
+      "description": "Test 404 error response for non-existent sticker"
+    }
+  ]
+}
