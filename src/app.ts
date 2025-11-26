@@ -19,14 +19,13 @@ const PORT: number = parseInt(process.env.PORT || '3000', 10);
 
 app.use(cors(corsConfig));
 app.use(express.json());
-app.use(apiLimiter);
 
 const socketService = new SocketService(httpServer);
 const healthController = new HealthController();
 
 app.get('/health', (req: Request, res: Response) => healthController.check(req, res));
 
-app.use('/api/v1', createV1Router(socketService));
+app.use('/api/v1', apiLimiter, createV1Router(socketService));
 
 app.use(errorHandler);
 
